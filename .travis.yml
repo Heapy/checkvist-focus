@@ -1,0 +1,27 @@
+language: java
+
+jdk:
+  - openjdk11
+
+script:
+  - ./gradlew check distZip
+
+deploy:
+  provider: releases
+  api_key: "${GITHUB_TOKEN}"
+  file: "build/distributions/checkvist-focus.zip"
+  skip_cleanup: true
+  on:
+    tags: true
+    jdk: openjdk11
+
+before_cache:
+  - rm -f  "${HOME}/.gradle/caches/modules-2/modules-2.lock"
+  - rm -f  "${HOME}/.gradle/caches/*/fileHashes/fileHashes.lock"
+  - rm -rf "${HOME}/.gradle/caches/*/plugin-resolution/"
+
+cache:
+  directories:
+    - "${HOME}/.gradle/caches/"
+    - "${HOME}/.gradle/wrapper/"
+

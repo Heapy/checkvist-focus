@@ -1,0 +1,10 @@
+# Intellij Idea
+/.idea/
+*.iml
+*.iws
+*.ipr
+out
+
+# Gradle
+build
+/.gradle/
