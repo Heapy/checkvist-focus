@@ -10,6 +10,10 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.apache.Apache
 import io.ktor.client.features.json.JacksonSerializer
 import io.ktor.client.features.json.JsonFeature
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.nio.file.StandardOpenOption.CREATE
+import java.nio.file.StandardOpenOption.TRUNCATE_EXISTING
 
 /**
  * Entrypoint.
@@ -19,6 +23,7 @@ import io.ktor.client.features.json.JsonFeature
  */
 suspend fun main() {
     val checkvistId = System.getenv("CHECKVIST_ID").toLong()
+    val outputFile = System.getenv("CHECKVIST_OUTPUT")
 
     val credentials = BasicAuthenticationCredentials(
         System.getenv("CHECKVIST_USERNAME"),
@@ -51,6 +56,7 @@ suspend fun main() {
     )
 
     val text = tasks
+        .asSequence()
         .filter { it.tags.containsKey("Focus") }
         .map { it.parentId to it.content }
         .groupBy { (parent, _) -> parent }
@@ -59,5 +65,6 @@ suspend fun main() {
             "## ${it.first}\n" + it.second.joinToString(separator = "\n") { "* $it" }
         }
 
-    println(text)
+    @Suppress("BlockingMethodInNonBlockingContext")
+    Files.write(Paths.get(outputFile), text.toByteArray(), CREATE, TRUNCATE_EXISTING)
 }
