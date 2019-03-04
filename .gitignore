@@ -8,3 +8,4 @@ out
 # Gradle
 build
 /.gradle/
+/buildSrc/.gradle/
